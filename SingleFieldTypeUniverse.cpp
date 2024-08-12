@@ -68,16 +68,19 @@ void SingleFieldTypeUniverse::SimulateUniverse(){
 void SingleFieldTypeUniverse::GodThread()
 {
 	bool breakme = false;
-	int x_random = 0;
-	int y_random = 0;
-	int z_random = 0;
+	srand((unsigned) time(NULL));
+	// Get a random number
+	//double slope = 2.0f/ 65535.0f;
+	int x_random = rand() % SPACE; // x pixel position of center
+	int y_random = rand() % SPACE; // y pixel position of center
+	int z_random = rand() % SPACE; // y pixel position of center
 	int wavelength = 2;
 	float trainwidth = 3.4F;
 	const double pi = 3.14159265358979323846;
 	
-	for(int z = 0;z<SPACE;z++) {
-		for(int y=0;y<SPACE;y++) {
-			for(int x=0;x<SPACE;x++) {
+	for(int z = z_random;z<SPACE;z++) {
+		for(int y=y_random;y<SPACE;y++) {
+			for(int x=x_random;x<SPACE;x++) {
 				if(z<SPACE-4){
 					if((m_space[z][y][x].energylevel>0) && (m_space[z+2][y][x].energylevel>0)){
 						x_random = x;
@@ -98,28 +101,33 @@ void SingleFieldTypeUniverse::GodThread()
 	}
 		
 	if(breakme==true){ 		 
-		int z = z_random;
-		for(int y=0;y<SPACE;y++)
-			for(int x=0;x<SPACE;x++) {			
-				double dx = x- x_random ; // or int, if the center coords are ints
-				double dy = y- y_random ;
-				double r = (sqrt(dx*dx+dy*dy)-RADIUS)/wavelength ;
-				double k = r - (1-SUPERPHASE)*RADIUS/wavelength ;
-				double a = 1 / (1.0 + (r/trainwidth)*(r/trainwidth));
-				int value = (int)floor(a * sin(k*2*pi));
-				if(value < -1)
-				{
-					m_space[z][y][x].energylevel =  -100;
-					
-				} else if(value == -1)
-				{
-					m_space[z][y][x].energylevel = 0;
-				} else
-				{
-					m_space[z][y][x].energylevel =  100;
-				}
+		
+		int depth = z_random + 8;
+		if(depth > SPACE)
+			depth = SPACE;
+			
+		for(int z = z_random;z<depth;z++)
+			for(int y=0;y<SPACE;y++)
+				for(int x=0;x<SPACE;x++) {			
+					double dx = x- x_random ; // or int, if the center coords are ints
+					double dy = y- y_random ;
+					double r = (sqrt(dx*dx+dy*dy)-RADIUS)/wavelength ;
+					double k = r - (1-SUPERPHASE)*RADIUS/wavelength ;
+					double a = 1 / (1.0 + (r/trainwidth)*(r/trainwidth));
+					int value = (int)floor(a * sin(k*2*pi));
+					if(value < -1)
+					{
+						m_space[z][y][x].energylevel =  -10;
 						
-			}
+					} else if(value == -1)
+					{
+						m_space[z][y][x].energylevel = 0;
+					} else
+					{
+						m_space[z][y][x].energylevel =  10;
+					}
+							
+				}
 	}
 }
 	
@@ -153,7 +161,6 @@ void SingleFieldTypeUniverse::InAction(int energyboost){
 					double r = (sqrt(dx*dx+dy*dy)-RADIUS)/wavelength ;
 					double k = r - (1-SUPERPHASE)*RADIUS/wavelength ;
 					double a = 1 / (1.0 + (r/trainwidth)*(r/trainwidth));
-					//m_space[z][y][x].energylevel= (int)floor((a * sin(k*2*pi))*energyboost);
 					int value = (int)floor(a * sin(k*2*pi));
 					if(value < -1)
 					{
