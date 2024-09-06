@@ -31,7 +31,7 @@ void SingleFieldTypeUniverse::SimulateUniverse(){
 
 		std::vector<std::thread> workers;
 		
-		int threads = 4;
+		int threads = 8;
 		int energyoffset = 2;
 
 		for(int i =0;i<threads;i++) {
@@ -74,8 +74,8 @@ void SingleFieldTypeUniverse::GodThread()
 	int x_random = rand() % SPACE; // x pixel position of center
 	int y_random = rand() % SPACE; // y pixel position of center
 	int z_random = rand() % SPACE; // y pixel position of center
-	int wavelength = 2;
-	float trainwidth = 3.4F;
+	int wavelength = 4;
+	float trainwidth = 1.4F;
 	const double pi = 3.14159265358979323846;
 	
 	for(int z = z_random;z<SPACE;z++) {
@@ -101,7 +101,6 @@ void SingleFieldTypeUniverse::GodThread()
 	}
 		
 	if(breakme==true){ 		 
-		
 		int depth = z_random + 8;
 		if(depth > SPACE)
 			depth = SPACE;
@@ -114,12 +113,12 @@ void SingleFieldTypeUniverse::GodThread()
 					double r = (sqrt(dx*dx+dy*dy)-RADIUS)/wavelength ;
 					double k = r - (1-SUPERPHASE)*RADIUS/wavelength ;
 					double a = 1 / (1.0 + (r/trainwidth)*(r/trainwidth));
-					int value = (int)floor(a * sin(k*2*pi));
+					int value = (int)floor(a * 1.0f/(sin(k*2*pi)));
 					if(value < -1)
 					{
 						m_space[z][y][x].energylevel =  -10;
 						
-					} else if(value == -1)
+					} else if(value == 0)
 					{
 						m_space[z][y][x].energylevel = 0;
 					} else
@@ -144,8 +143,8 @@ void SingleFieldTypeUniverse::InAction(int energyboost){
 	int wavelength = WAVELENGTH;
 	float trainwidth = TRAINWIDTH;
 	if(energyboost == 2) {
-		wavelength = 16;
-		trainwidth = 1.4f;
+		wavelength = 8;
+		trainwidth = 2.4f;
 	}
 	
 	int depth = z_random + 4;
@@ -158,6 +157,9 @@ void SingleFieldTypeUniverse::InAction(int energyboost){
 				for(int x=0;x<SPACE;x++) {
 					double dx = x- x_random ; // or int, if the center coords are ints
 					double dy = y- y_random ;
+					if((x > 64) && (y > 64)) {
+						wavelength = 16;
+					}
 					double r = (sqrt(dx*dx+dy*dy)-RADIUS)/wavelength ;
 					double k = r - (1-SUPERPHASE)*RADIUS/wavelength ;
 					double a = 1 / (1.0 + (r/trainwidth)*(r/trainwidth));
@@ -215,12 +217,17 @@ void SingleFieldTypeUniverse::LayeredAction(int energyboost){
 	int x_random = rand() % SPACE; // x pixel position of center
 	int y_random = rand() % SPACE; // y pixel position of center
 	int z_random = rand() % SPACE; // y pixel position of center
-	cout<<"xyz random"<< x_random <<","<<y_random<<" "<<z_random<<endl;
-	int pixel = 1;	
-	for(int z=z_random;z<64;z++) {
-		for(int y=y_random;y<64;y++) 
-			for(int x=x_random;x<64;x++) {
-				m_space[z][y][x].energylevel= m_space[z][y][x].energylevel+ pixel;
+	
+	int depth = z_random + 4;
+	if(depth > SPACE)
+		depth = SPACE;
+		
+	int pixel = rand() % 256;
+		
+	for(int z=z_random;z<depth;z++) {
+		for(int y=y_random;y<SPACE;y++) 
+			for(int x=x_random;x<SPACE;x++) {
+				m_space[z][y][x].energylevel= pixel;
 			} 
 	}
 
