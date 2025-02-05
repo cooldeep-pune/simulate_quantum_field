@@ -157,7 +157,7 @@ void SingleFieldTypeUniverse::InAction(int energyboost){
 				for(int x=0;x<SPACE;x++) {
 					double dx = x- x_random ; // or int, if the center coords are ints
 					double dy = y- y_random ;
-					if((x > 64) && (y > 64)) {
+					if((x > 64) || (y > 64)) {
 						wavelength = 16;
 					}
 					double r = (sqrt(dx*dx+dy*dy)-RADIUS)/wavelength ;
